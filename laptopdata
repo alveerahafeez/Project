@@ -1,0 +1,178 @@
+Use zomato;
+Select * from laptopData;
+
+Select distinct OpSys from laptopData;
+
+SELECT 
+    OpSys,
+    CASE
+        WHEN OpSys LIKE 'Windows%' THEN 'Windows'
+        WHEN OpSys LIKE '_ac%' THEN 'Macos'
+        WHEN OpSys LIKE '%Linux%' THEN 'Linux'
+        ELSE 'Others'
+    END AS OS
+FROM
+    laptopData;
+
+UPDATE laptopData 
+SET 
+    OpSys = CASE
+        WHEN OpSys LIKE 'Windows%' THEN 'Windows'
+        WHEN OpSys LIKE '_ac%' THEN 'Macos'
+        WHEN OpSys LIKE '%Linux%' THEN 'Linux'
+        ELSE 'Others'
+    END;
+SELECT 
+    *
+FROM
+    laptopData;
+    
+SELECT DISTINCT ScreenResolution from laptopData;
+
+Alter Table laptopData
+add column ResolutionHeight integer after ScreenResolution,
+add column ResolutionWidth integer after ResolutionHeight;
+
+select * from laptopData;
+
+Select substring_index(Substring_index(ScreenResolution,' ',-1),'x',1)from laptopData;
+Select substring_index(Substring_index(ScreenResolution,' ',-1),'x',-1)from laptopData;
+
+update laptopData
+set ResolutionHeight = substring_index(Substring_index(ScreenResolution,' ',-1),'x',1);
+update laptopData
+set ResolutionWidth = substring_index(Substring_index(ScreenResolution,' ',-1),'x',-1);
+
+Alter table laptopData
+add column TouchScreen integer after ResolutionWidth;
+
+Select ScreenResolution like '%TouchScreen%' from laptopData;
+
+Update laptopData
+set TouchScreen = ScreenResolution like '%TouchScreen%';
+
+
+Select Cpu,
+case
+when Cpu like 'Intel%' then 'Intel'
+when Cpu like 'AMD%' then 'AMD'
+else 'Others'
+end as Core
+from laptopData;
+
+Select * from laptopData;
+
+Alter table laptopData
+Drop column ScreenResolution;
+
+Alter table laptopData
+add column cpu_brand varchar(255) after Cpu,
+add column cpu_name varchar(255) after cpu_brand,
+add column cpu_speed varchar(255) after cpu_name;
+
+Select substring_index(cpu, ' ',-1) from laptopData;
+Select substring_index(cpu, ' ',2) from laptopData;
+Select substring_index(substring_index(cpu, ' ',3),' ',-2) from laptopData;
+
+Update laptopData
+set cpu_brand = substring_index(cpu,' ',1);
+
+Update laptopData
+set cpu_speed = substring_index(cpu,' ',-1);
+
+Update laptopData
+set cpu_name = substring_index(substring_index(cpu,' ',3),' ',-2);
+
+Alter table laptopData
+drop column Cpu;
+
+Select substring_index(Ram,'G',1) from laptopData;
+
+Update laptopData
+set ram = substring_index(Ram,'G',1);
+
+Select * from laptopData;
+
+Select Replace(weight, 'kg', '') from laptopData;
+
+Update laptopData
+set weight= Replace(weight,'kg','');
+
+Select Memory from laptopData;
+
+Select Memory,
+case 
+when Memory like '%HDD%' and Memory like '%SDD%' then 'Hybrid'
+when Memory like '%HDD%' then 'HDD'
+when Memory like '%SSD' then 'SSD'
+when Memory like 'Flash Storage' then 'Flash Storage'
+else 'Others'
+end as Memory_Type
+from laptopData;
+
+Alter table laptopData
+add column memory_type varchar(255) after memory;
+
+Update laptopData
+set memory_type = case 
+when Memory like '%HDD%' and Memory like '%SDD%' then 'Hybrid'
+when Memory like '%HDD%' then 'HDD'
+when Memory like '%SSD' then 'SSD'
+when Memory like '%Flash Storage' then 'Flash Storage'
+else 'Others'
+end;
+
+Select * from laptopData;
+
+Alter table laptopData
+add column primary_storage integer after memory_type,
+add column secondary_storage integer after primary_storage;
+
+Select substring_index(memory,'+',1) from laptopData;
+Select substring_index(memory,' ',1) from laptopData;
+
+Select regexp_substr(substring_index(memory,' ',1),'[0-9]+'),
+case when memory like '%+%' then substring_index(memory,'+',-1) else 0 end from laptopData;
+
+Select memory,regexp_substr(substring_index(memory,'+',1),'[0-9]+'),
+case when memory like '%+%' then substring_index(memory,'+',-1) else 0 end from laptopData;
+
+Select substring_index(memory,' ',1) from laptopData;
+
+Update laptopData
+set primary_storage = regexp_substr(substring_index(memory,'+',1),'[0-9]+');
+
+Update laptopData
+set secondary_storage = case when memory like '%+%' then regexp_substr(substring_index(memory,'+',-1),'[0-9]+') else 0 end;
+
+Alter table laptopData
+Drop column memory;
+
+select * from laptopData;
+
+Alter table laptopdata
+Drop column `Unnamed: 0`;
+
+Select substring_index(Gpu,' ',-2) from laptopdata;
+
+Alter table laptopdata
+add column gpu_type varchar(255) after Gpu;
+
+Update laptopdata
+set gpu_type = substring_index(Gpu,' ',-2);
+
+Select substring_index(Gpu,' ',3) from laptopdata;
+
+Alter table laptopdata
+add column gpu_name varchar(255) after Gpu;
+
+Update laptopdata
+set gpu_name = substring_index(Gpu,' ',3);
+
+Alter table laptopdata
+drop column Gpu;
+
+Select max(price), sum(price), avg(price), std(price) from laptopdata;
+
+Select count(*), memory_type from laptopdata
+group by memory_type;
